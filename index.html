@@ -1,651 +1,1000 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hicks — Your Living Memory</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hicks — Why</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Lausanne:wght@300;400&family=DM+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0e0c0f;
+    --paper: #f5f0eb;
+    --warm-white: #faf7f4;
+    --accent: #c4572a;
+    --accent-muted: #c4572a22;
+    --mid: #7a6e68;
+    --faint: #e8e0d8;
+    --gold: #b8962e;
+  }
 
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #141414;
-            --bg-card: #1a1a1a;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --text-muted: #666666;
-            --accent: #6366f1;
-            --accent-hover: #818cf8;
-            --accent-light: rgba(99, 102, 241, 0.1);
-            --border: #2a2a2a;
-            --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-        }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+  html { scroll-behavior: smooth; }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
 
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            padding: 16px 0;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-        }
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+  }
 
-        nav .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 28px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    mix-blend-mode: multiply;
+  }
 
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            font-weight: 600;
-            font-style: italic;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    opacity: 0.5;
+  }
 
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            list-style: none;
-        }
+  .nav-cta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 2px;
+    opacity: 0.4;
+    transition: opacity 0.3s;
+  }
 
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
+  .nav-cta:hover { opacity: 1; }
 
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 140px 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
 
-        .nav-cta {
-            background: var(--accent);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 1s 0.2s forwards;
+  }
 
-        .nav-cta:hover {
-            background: var(--accent-hover);
-        }
+  .hero-headline {
+    font-size: clamp(52px, 7vw, 96px);
+    font-weight: 300;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    max-width: 900px;
+    opacity: 0;
+    animation: fadeUp 1.2s 0.4s forwards;
+  }
 
-        /* Hero */
-        .hero {
-            padding: 160px 0 100px;
-            text-align: center;
-            position: relative;
-        }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-            pointer-events: none;
-        }
+  .hero-sub {
+    margin-top: 48px;
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--mid);
+    max-width: 520px;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 1s 0.8s forwards;
+  }
 
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 72px;
-            font-weight: 600;
-            font-style: italic;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+  .hero-decoration {
+    position: absolute;
+    right: -80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    border: 1px solid var(--faint);
+    opacity: 0;
+    animation: fadeIn 2s 1.2s forwards;
+  }
 
-        .hero p {
-            font-size: 20px;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 40px;
-        }
+  .hero-decoration::before {
+    content: '';
+    position: absolute;
+    inset: 60px;
+    border-radius: 50%;
+    border: 1px solid var(--faint);
+  }
 
-        .hero-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--gradient);
-            color: white;
-            padding: 16px 32px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+  .hero-decoration::after {
+    content: '';
+    position: absolute;
+    inset: 120px;
+    border-radius: 50%;
+    border: 1px solid var(--faint);
+  }
 
-        .hero-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
-        }
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute;
+    bottom: 48px;
+    left: 60px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeIn 1s 1.5s forwards;
+  }
 
-        .hero-cta svg {
-            width: 20px;
-            height: 20px;
-        }
+  .scroll-hint::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--mid);
+    animation: expandLine 1s 1.8s both;
+  }
 
-        .price-note {
-            margin-top: 16px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
+  /* SECTION BASE */
+  section {
+    padding: 120px 60px;
+    position: relative;
+  }
 
-        .price-note strong {
-            color: var(--text-secondary);
-        }
+  /* THE PROBLEM */
+  .problem {
+    background: var(--ink);
+    color: var(--warm-white);
+  }
 
-        /* Features */
-        .features {
-            padding: 100px 0;
-        }
+  .problem-inner {
+    max-width: 760px;
+    margin: 0 auto;
+  }
 
-        .section-header {
-            text-align: center;
-            margin-bottom: 64px;
-        }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 60px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
-        .section-header h2 {
-            font-size: 48px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.3;
+  }
 
-        .section-header p {
-            font-size: 18px;
-            color: var(--text-secondary);
-            max-width: 500px;
-            margin: 0 auto;
-        }
+  .problem .section-label {
+    color: var(--accent);
+  }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
+  .problem-statement {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 300;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
 
-        .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            transition: border-color 0.2s, transform 0.2s;
-        }
+  .problem-statement em {
+    font-style: italic;
+    color: var(--gold);
+  }
 
-        .feature-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-4px);
-        }
+  .problem-body {
+    margin-top: 56px;
+    font-size: 20px;
+    color: #a89f98;
+    line-height: 1.8;
+    columns: 2;
+    column-gap: 60px;
+  }
 
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--accent-light);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+  .problem-body p + p { margin-top: 1.4em; }
 
-        .feature-icon svg {
-            width: 24px;
-            height: 24px;
-            color: var(--accent);
-        }
+  /* VAULT COMPARISON */
+  .vault {
+    background: var(--warm-white);
+  }
 
-        .feature-card h3 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
+  .vault-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
 
-        .feature-card p {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.7;
-        }
+  .vault-headline {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 80px;
+  }
 
-        /* How it works */
-        .how-it-works {
-            padding: 100px 0;
-            background: var(--bg-secondary);
-        }
+  .vault-headline em { font-style: italic; color: var(--accent); }
 
-        .steps {
-            display: flex;
-            justify-content: space-between;
-            gap: 48px;
-            margin-top: 64px;
-        }
+  .vault-grid {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 0 60px;
+    align-items: start;
+  }
 
-        .step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-        }
+  .vault-divider {
+    background: var(--faint);
+    height: 100%;
+    min-height: 300px;
+  }
 
-        .step::after {
-            content: '';
-            position: absolute;
-            top: 32px;
-            right: -24px;
-            width: 48px;
-            height: 2px;
-            background: var(--border);
-        }
+  .vault-col-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
 
-        .step:last-child::after {
-            display: none;
-        }
+  .vault-col-label.other { color: var(--mid); }
+  .vault-col-label.hicks { color: var(--accent); }
 
-        .step-number {
-            width: 64px;
-            height: 64px;
-            background: var(--gradient);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-            font-size: 24px;
-            font-weight: 700;
-        }
+  .vault-col-title {
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1.3;
+    margin-bottom: 24px;
+  }
 
-        .step h3 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
+  .vault-col.other .vault-col-title { color: var(--mid); }
 
-        .step p {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
+  .vault-col-body {
+    font-size: 18px;
+    line-height: 1.75;
+    color: var(--mid);
+  }
 
-        /* Pricing */
-        .pricing {
-            padding: 100px 0;
-        }
+  .vault-col.hicks .vault-col-body { color: var(--ink); }
 
-        .pricing-card {
-            max-width: 500px;
-            margin: 0 auto;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 48px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+  .vault-col-items {
+    list-style: none;
+    margin-top: 32px;
+  }
 
-        .pricing-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient);
-        }
+  .vault-col-items li {
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--faint);
+    color: var(--mid);
+    display: flex;
+    gap: 12px;
+  }
 
-        .pricing-card h3 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
+  .vault-col-items li::before {
+    content: '—';
+    opacity: 0.3;
+    flex-shrink: 0;
+  }
 
-        .pricing-card .tagline {
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-        }
+  .vault-col.hicks .vault-col-items li { color: var(--ink); }
+  .vault-col.hicks .vault-col-items li::before { color: var(--accent); opacity: 1; content: '→'; }
 
-        .price {
-            font-size: 64px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+  /* THE WHY FEATURE */
+  .why-feature {
+    background: var(--paper);
+    padding: 120px 60px;
+  }
 
-        .price span {
-            font-size: 20px;
-            font-weight: 400;
-            color: var(--text-secondary);
-        }
+  .why-inner {
+    max-width: 860px;
+    margin: 0 auto;
+  }
 
-        .price-note {
-            color: var(--text-muted);
-            margin-bottom: 32px;
-        }
+  .why-headline {
+    font-size: clamp(40px, 5.5vw, 72px);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 32px;
+  }
 
-        .pricing-features {
-            list-style: none;
-            text-align: left;
-            margin-bottom: 32px;
-        }
+  .why-headline em { font-style: italic; color: var(--accent); }
 
-        .pricing-features li {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-        }
+  .why-intro {
+    font-size: 22px;
+    color: var(--mid);
+    line-height: 1.7;
+    margin-bottom: 80px;
+    max-width: 640px;
+  }
 
-        .pricing-features li:last-child {
-            border-bottom: none;
-        }
+  /* WHY CARD MOCKUP */
+  .why-card {
+    background: #17141a;
+    border-radius: 20px;
+    padding: 48px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
 
-        .pricing-features svg {
-            width: 20px;
-            height: 20px;
-            color: #22c55e;
-            flex-shrink: 0;
-        }
+  .why-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c4572a44, transparent);
+  }
 
-        .pricing-cta {
-            display: block;
-            width: 100%;
-            background: var(--gradient);
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+  .why-card-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-        .pricing-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
-        }
+  .why-card-eyebrow::before {
+    content: '💡';
+    font-size: 14px;
+  }
 
-        /* Footer */
-        footer {
-            padding: 48px 0;
-            border-top: 1px solid var(--border);
-            text-align: center;
-        }
+  .why-card-headline {
+    font-size: 26px;
+    font-weight: 300;
+    color: #f5f0eb;
+    line-height: 1.4;
+    font-style: italic;
+    margin-bottom: 32px;
+  }
 
-        footer p {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
+  .why-card-expand {
+    border-top: 1px solid #ffffff0f;
+    padding-top: 28px;
+  }
 
-        /* Mobile */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 48px;
-            }
+  .why-card-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #7a6e68;
+    margin-bottom: 14px;
+  }
 
-            .hero p {
-                font-size: 16px;
-            }
+  .why-card-bullets {
+    list-style: none;
+    margin-bottom: 28px;
+  }
 
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
+  .why-card-bullets li {
+    font-size: 15px;
+    color: #a89f98;
+    padding: 8px 0;
+    border-bottom: 1px solid #ffffff06;
+    display: flex;
+    gap: 10px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+  }
 
-            .steps {
-                flex-direction: column;
-                gap: 32px;
-            }
+  .why-card-bullets li::before {
+    content: '·';
+    color: var(--accent);
+    flex-shrink: 0;
+  }
 
-            .step::after {
-                display: none;
-            }
+  /* NIGHT DREAMING */
+  .dreaming {
+    background: var(--ink);
+    color: var(--warm-white);
+    padding: 140px 60px;
+    position: relative;
+    overflow: hidden;
+  }
 
-            .nav-links {
-                display: none;
-            }
-        }
-    </style>
+  .dreaming-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .dreaming::before {
+    content: '';
+    position: absolute;
+    bottom: -200px; right: -200px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    border: 1px solid #ffffff05;
+  }
+
+  .dreaming::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; right: -100px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    border: 1px solid #ffffff08;
+  }
+
+  .dreaming-headline {
+    font-size: clamp(40px, 5.5vw, 72px);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 40px;
+  }
+
+  .dreaming-headline em { font-style: italic; color: var(--gold); }
+
+  .dreaming-body {
+    font-size: 22px;
+    color: #a89f98;
+    line-height: 1.75;
+    max-width: 680px;
+    margin-bottom: 72px;
+  }
+
+  .dreaming-body strong { color: var(--warm-white); font-weight: 400; }
+
+  .dreaming-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+  }
+
+  .dreaming-card {
+    background: #1a1720;
+    padding: 36px 32px;
+  }
+
+  .dreaming-card-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .dreaming-card-title {
+    font-size: 20px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.35;
+    margin-bottom: 14px;
+    color: var(--warm-white);
+  }
+
+  .dreaming-card-body {
+    font-size: 16px;
+    color: #7a6e68;
+    line-height: 1.7;
+  }
+
+  .dreaming-footnote {
+    margin-top: 48px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: #3d3740;
+    text-transform: uppercase;
+  }
+
+  /* STORIES SECTION */
+  .stories {
+    background: var(--ink);
+    color: var(--warm-white);
+    padding: 120px 60px;
+  }
+
+  .stories-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .stories-headline {
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 80px;
+    max-width: 700px;
+  }
+
+  .stories-headline em { font-style: italic; color: var(--gold); }
+
+  .story-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .story-card {
+    background: #1a1720;
+    padding: 48px 40px;
+    position: relative;
+    transition: background 0.4s;
+  }
+
+  .story-card:hover { background: #201d28; }
+
+  .story-card-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 28px;
+  }
+
+  .story-card-title {
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1.3;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+
+  .story-card-body {
+    font-size: 17px;
+    color: #a89f98;
+    line-height: 1.75;
+  }
+
+  .story-card-why {
+    margin-top: 28px;
+    padding: 20px;
+    background: #ffffff05;
+    border-left: 2px solid var(--accent);
+    font-size: 15px;
+    color: #c4572a;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  /* PROMISE */
+  .promise {
+    background: var(--warm-white);
+    padding: 160px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .promise::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    border: 1px solid var(--faint);
+  }
+
+  .promise::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 900px;
+    height: 900px;
+    border-radius: 50%;
+    border: 1px solid var(--faint);
+  }
+
+  .promise-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .promise-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 48px;
+  }
+
+  .promise-quote {
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 300;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    font-style: italic;
+  }
+
+  .promise-attribution {
+    margin-top: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  .promise-cta {
+    margin-top: 64px;
+    display: inline-block;
+    padding: 18px 48px;
+    background: var(--ink);
+    color: var(--warm-white);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  .promise-cta:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink);
+    color: #3d3740;
+    padding: 48px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes expandLine {
+    from { width: 0; }
+    to { width: 40px; }
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.25s; }
+  .reveal-delay-3 { transition-delay: 0.4s; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav, section, .why-feature, .stories, .promise, footer { padding-left: 28px; padding-right: 28px; }
+    .hero { padding: 120px 28px 80px; }
+    .problem-body { columns: 1; }
+    .vault-grid { grid-template-columns: 1fr; }
+    .vault-divider { display: none; }
+    .dreaming-grid { grid-template-columns: 1fr; }
+    .story-grid { grid-template-columns: 1fr; }
+    .hero-decoration { display: none; }
+  }
+</style>
 </head>
 <body>
-    <nav>
-        <div class="container">
-            <div class="logo">Hicks</div>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-            </ul>
-            <a href="#pricing" class="nav-cta">Get Started</a>
+
+<nav>
+  <a class="nav-logo" href="#">Hicks</a>
+  <a class="nav-cta" href="#">Begin →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-decoration"></div>
+  <p class="hero-eyebrow">The intelligence layer</p>
+  <h1 class="hero-headline">
+    Your notes don't need a home.<br>
+    They need a <em>mind.</em>
+  </h1>
+  <p class="hero-sub">
+    Hicks doesn't file your thinking. It follows it — and tells you what it sees.
+  </p>
+  <div class="scroll-hint">Continue reading</div>
+</section>
+
+<!-- THE PROBLEM -->
+<section class="problem">
+  <div class="problem-inner">
+    <div class="section-label reveal">The uncomfortable truth</div>
+    <h2 class="problem-statement reveal reveal-delay-1">
+      You already know more than<br>
+      you think you know.<br>
+      <em>You just can't find it.</em>
+    </h2>
+    <div class="problem-body reveal reveal-delay-2">
+      <p>You captured the idea. You wrote the note. You saved the article, highlighted the passage, typed the thought at midnight when it felt urgent.</p>
+      <p>And then it disappeared. Not deleted — just buried. Somewhere in a folder inside a folder, tagged with a word you no longer use, timestamped on a Tuesday you can barely remember.</p>
+      <p>This is why most people abandon their knowledge systems within a week. Not because the tool is wrong. Not because the methodology is wrong. Because the daily cost of sorting, filing, connecting, and maintaining a vault exceeds what any person will sustain indefinitely.</p>
+      <p>Storage is solved. Retrieval is engineering. What nobody has built is the methodology — the system that decides what connects to what, what to revisit, what to let go. The agent that does the maintenance humans cannot sustain.</p>
+      <p>That is what Hicks is.</p>
+    </div>
+  </div>
+</section>
+
+<!-- VAULT COMPARISON -->
+<section class="vault">
+  <div class="vault-inner">
+    <h2 class="vault-headline reveal">
+      Every other tool gives you<br>
+      a <em>vault.</em><br>
+      Hicks gives you a mind.
+    </h2>
+    <div class="vault-grid">
+      <div class="vault-col other reveal">
+        <div class="vault-col-label other">The old way</div>
+        <div class="vault-col-title">A very organised attic</div>
+        <div class="vault-col-body">
+          Notion. Obsidian. Roam. They are extraordinary filing systems. They store everything you've ever thought, beautifully labelled and perfectly retrievable — if you know exactly what you're looking for.
         </div>
-    </nav>
-
-    <section class="hero">
-        <div class="container">
-            <h1>Your Living Memory</h1>
-            <p>Metabolizes your notes, dreams while idle, and reweaves connections automatically. Your knowledge, evolving.</p>
-            <a href="#pricing" class="hero-cta">
-                Start for $49
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-            </a>
-            <p class="price-note">One-time payment. <strong>Yours forever.</strong></p>
+        <ul class="vault-col-items">
+          <li>Surfaces notes when you search for them</li>
+          <li>Connects ideas you already know are connected</li>
+          <li>Returns what you put in</li>
+          <li>Remembers everything, understands nothing</li>
+          <li>Silent between searches</li>
+        </ul>
+      </div>
+      <div class="vault-divider"></div>
+      <div class="vault-col hicks reveal reveal-delay-1">
+        <div class="vault-col-label hicks">Hicks</div>
+        <div class="vault-col-title">A living intelligence</div>
+        <div class="vault-col-body">
+          Hicks watches how you think — not just what you write. It notices when two ideas have been growing in parallel for three weeks without ever touching. Then it tells you. And it tells you <em>why.</em>
         </div>
-    </section>
+        <ul class="vault-col-items">
+          <li>Surfaces notes before you know you need them</li>
+          <li>Finds connections you didn't know existed</li>
+          <li>Shows you what your thinking is becoming</li>
+          <li>Knows the difference between a reference and a live idea</li>
+          <li>Speaks when it has something worth saying</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-header">
-                <h2>Built for Thought</h2>
-                <p>Every feature designed to help your knowledge grow and connect.</p>
-            </div>
+<!-- THE WHY FEATURE -->
+<section class="why-feature">
+  <div class="why-inner">
+    <div class="section-label reveal">The feature that changes everything</div>
+    <h2 class="why-headline reveal reveal-delay-1">
+      Every suggestion<br>
+      comes with a <em>why.</em>
+    </h2>
+    <p class="why-intro reveal reveal-delay-2">
+      Hicks never just says "these might be related." It tells you what it noticed, how long it's been watching, and why right now is the moment to pay attention.
+    </p>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </div>
-                    <h3>Block Editor</h3>
-                    <p>Notion-style blocks with drag-and-drop. Headings, lists, images, code blocks — all with keyboard shortcuts.</p>
-                </div>
+    <div class="why-card reveal reveal-delay-1">
+      <div class="why-card-eyebrow">Hicks noticed something</div>
+      <div class="why-card-headline">
+        "You've been building these two ideas in parallel for 18 days. They've never touched. That might be the most important thing you haven't written yet."
+      </div>
+      <div class="why-card-expand">
+        <div class="why-card-section-label">Why this, why now</div>
+        <ul class="why-card-bullets">
+          <li>You've returned to Agent Memory Architecture six times since March 4th — each time adding, never concluding</li>
+          <li>Graph Traversal Patterns has been growing in the same direction, written on different days, never linked</li>
+          <li>Both are at peak activity this week — the thinking is live, not historical</li>
+          <li>No connection exists between them despite three weeks of parallel development</li>
+        </ul>
+      </div>
+    </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                        </svg>
-                    </div>
-                    <h3>Wiki-Links</h3>
-                    <p>Connect notes naturally with [[links]]. Build a web of knowledge that grows with you.</p>
-                </div>
+    <div class="why-card reveal">
+      <div class="why-card-eyebrow">A bridge appeared</div>
+      <div class="why-card-headline">
+        "These two ideas have never met — but there's a note between them that connects to both. You may have already written the bridge without realising it."
+      </div>
+      <div class="why-card-expand">
+        <div class="why-card-section-label">The connection</div>
+        <ul class="why-card-bullets">
+          <li>Knowledge Representation links to both Agent Memory and Graph Traversal — it is the bridge</li>
+          <li>All three notes are live threads you're actively developing</li>
+          <li>The indirect relationship between the outer two is stronger than any individual connection</li>
+        </ul>
+      </div>
+    </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                        </svg>
-                    </div>
-                    <h3>Brain Dump</h3>
-                    <p>Capture thoughts instantly. Floating button, anywhere. Process later — Night Dreaming organizes for you.</p>
-                </div>
+  </div>
+</section>
 
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </div>
-                    <h3>Night Dreaming</h3>
-                    <p>While you sleep, Hicks processes your vault. Suggests links, finds patterns, organizes chaos.</p>
-                </div>
+<!-- NIGHT DREAMING -->
+<section class="dreaming">
+  <div class="dreaming-inner">
+    <div class="section-label reveal" style="color: var(--gold);">While you sleep</div>
+    <h2 class="dreaming-headline reveal reveal-delay-1">
+      Hicks thinks<br>
+      while you <em>don't.</em>
+    </h2>
+    <p class="dreaming-body reveal reveal-delay-2">
+      Every night, Hicks runs. Not because you asked it to — because your vault is always accumulating faster than you can process it. While you're away, it finds the patterns, consolidates the fragments, flags the contradictions, and surfaces what's ready. <strong>You wake up to a vault that has done its own thinking.</strong>
+    </p>
+    <div class="dreaming-grid">
+      <div class="dreaming-card reveal">
+        <div class="dreaming-card-time">While you sleep</div>
+        <div class="dreaming-card-title">The fragments become threads</div>
+        <div class="dreaming-card-body">Brain Dump captures that captured the idea but never became a note — processed, named, filed. The raw thinking finds its place.</div>
+      </div>
+      <div class="dreaming-card reveal reveal-delay-1">
+        <div class="dreaming-card-time">While you sleep</div>
+        <div class="dreaming-card-title">The connections reveal themselves</div>
+        <div class="dreaming-card-body">Threads that have been growing in parallel without touching — Hicks finds them, scores them, and brings them to you in the morning with a reason.</div>
+      </div>
+      <div class="dreaming-card reveal reveal-delay-2">
+        <div class="dreaming-card-time">While you sleep</div>
+        <div class="dreaming-card-title">The contradictions are named</div>
+        <div class="dreaming-card-body">Two notes that pull in opposite directions. A belief you held in March that conflicts with what you wrote in October. Hicks flags it. You decide.</div>
+      </div>
+    </div>
+    <div class="dreaming-footnote reveal">Nothing is changed without your approval. Hicks suggests. You confirm.</div>
+  </div>
+</section>
 
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </div>
-                    <h3>Advisors</h3>
-                    <p>Create AI personas. Debate ideas with yourself. Multiple perspectives, one tool.</p>
-                </div>
+<!-- STORIES -->
+<section class="stories">
+  <div class="stories-inner">
+    <h2 class="stories-headline reveal">
+      What it feels like when<br>
+      your thinking <em>finally</em><br>
+      starts talking to itself.
+    </h2>
+    <div class="story-grid">
 
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                        </svg>
-                    </div>
-                    <h3>PARA System</h3>
-                    <p>Projects, Areas, Resources, Archives. A structure that scales with your thinking.</p>
-                </div>
-            </div>
+      <div class="story-card reveal">
+        <div class="story-card-number">01</div>
+        <div class="story-card-title">The conclusion you already reached</div>
+        <div class="story-card-body">
+          You've been writing about the same problem from four different angles for two months. Different notes, different days, different moods. You thought you were still working on it. Hicks tells you that you finished it three weeks ago — you just never wrote the final line.
         </div>
-    </section>
+        <div class="story-card-why">"You have everything you need. You're just not ready to commit to saying it."</div>
+      </div>
 
-    <section class="how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="section-header">
-                <h2>How It Works</h2>
-                <p>Simple to start, powerful as you grow.</p>
-            </div>
-
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Capture</h3>
-                    <p>Brain Dump anything. Notes, links, ideas. Quick and frictionless.</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Connect</h3>
-                    <p>Wiki-links tie notes together. Hicks suggests new connections.</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Dream</h3>
-                    <p>Night Dreaming runs while you sleep. Patterns emerge.</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Evolve</h3>
-                    <p>Your knowledge grows. Links multiply. Insights compound.</p>
-                </div>
-            </div>
+      <div class="story-card reveal reveal-delay-1">
+        <div class="story-card-number">02</div>
+        <div class="story-card-title">The idea that came back</div>
+        <div class="story-card-body">
+          A thread you started six weeks ago went quiet. You moved on. Then you started something new — and Hicks noticed the two share territory you've never mapped. The old thread isn't dead. It was waiting for you to be ready for it.
         </div>
-    </section>
+        <div class="story-card-why">"You started something here. You might be ready to finish it now."</div>
+      </div>
 
-    <section class="pricing" id="pricing">
-        <div class="container">
-            <div class="section-header">
-                <h2>Simple Pricing</h2>
-                <p>One payment. Lifetime access.</p>
-            </div>
-
-            <div class="pricing-card">
-                <h3>Hicks</h3>
-                <p class="tagline">Your living memory</p>
-                
-                <div class="price">$49<span>/one-time</span></div>
-                <p class="price-note">Includes all features. No subscription.</p>
-
-                <ul class="pricing-features">
-                    <li>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Block editor with drag-and-drop
-                    </li>
-                    <li>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Wiki-links and connections
-                    </li>
-                    <li>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Brain Dump + Night Dreaming
-                    </li>
-                    <li>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Advisors + debate mode
-                    </li>
-                    <li>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        PARA organization
-                    </li>
-                    <li>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Local-first, privacy-focused
-                    </li>
-                    <li>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Import from Obsidian, local files
-                    </li>
-                </ul>
-
-                <a href="#" class="pricing-cta">Get Started</a>
-            </div>
+      <div class="story-card reveal reveal-delay-2">
+        <div class="story-card-number">03</div>
+        <div class="story-card-title">The tension you were avoiding</div>
+        <div class="story-card-body">
+          Two of your most active threads point in opposite directions. You wrote them weeks apart, in different contexts. Hicks sees the contradiction and names it. Sometimes the most important thought is the one that makes two ideas fight.
         </div>
-    </section>
+        <div class="story-card-why">"These two notes pull against each other. That tension might be the whole point."</div>
+      </div>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Hicks. Your living memory.</p>
+      <div class="story-card reveal reveal-delay-3">
+        <div class="story-card-number">04</div>
+        <div class="story-card-title">The morning it all made sense</div>
+        <div class="story-card-body">
+          You open the app. Hicks has been thinking overnight. It surfaces one thread — not because it's new, but because it's been building for three weeks without a conclusion, and this morning you finally have the words for it. Some insights have to be waited for. Hicks waits with you.
         </div>
-    </footer>
+        <div class="story-card-why">"You've circled this seven times. Today feels different. What are you waiting to say?"</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROMISE -->
+<section class="promise">
+  <div class="promise-inner">
+    <div class="promise-label reveal">The Hicks promise</div>
+    <blockquote class="promise-quote reveal reveal-delay-1">
+      "I am Hicks — your living memory that metabolizes, dreams, and reweaves itself."
+    </blockquote>
+    <div class="promise-attribution reveal reveal-delay-2">Hicks · Est. 2026</div>
+    <p class="reveal reveal-delay-3" style="margin-top: 32px; font-size: 16px; color: var(--mid); font-family: 'DM Mono', monospace; letter-spacing: 0.1em; line-height: 1.8;">
+      Local-first. Your data lives on your machine.<br>No account. No cloud. No one watching but Hicks.
+    </p>
+    <a href="#" class="promise-cta reveal reveal-delay-3" style="margin-top: 40px;">Begin thinking differently →</a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Hicks</span>
+  <span>Your living memory</span>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+</script>
+
 </body>
 </html>
